@@ -5,44 +5,45 @@
 #                                                     +:+ +:+         +:+      #
 #    By: tsadouk <tsadouk@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/11/16 20:22:27 by tsadouk           #+#    #+#              #
-#    Updated: 2023/12/13 14:49:05 by tsadouk          ###   ########.fr        #
+#    Created: 2023/12/13 14:23:56 by tsadouk           #+#    #+#              #
+#    Updated: 2023/12/13 14:59:57 by tsadouk          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-CC = cc
+NAME = minitalk.a
 
-CFLAGS = -Wall -Werror -Wextra
+CC = gcc
 
-SRCS =  srcs/ft_printf.c \
-		srcs/ft_putchar.c \
-		srcs/ft_putstr.c \
-		srcs/ft_strlen.c \
-		srcs/ft_putdecimal.c \
-		srcs/ft_putptr.c \
-		srcs/ft_putunsigned.c \
-		srcs/ft_puthexa.c \
-		srcs/ft_putbighexa.c \
-		srcs/ft_atoi.c \
+CFLAGS = -Wall -Wextra -Werror
+
+SRCS = ft_client.c ft_server.c
 
 OBJS = $(SRCS:.c=.o)
 
-NAME = libftprintf.a
+TARGET1 = server 
+TARGET2 = client
 
-all: $(NAME)
+all: lib $(TARGET1) $(TARGET2)
+
+$(TARGET1): ft_server.o
+	$(CC) $(CFLAGS) $^ -L printf -lftprintf -o $@
+
+$(TARGET2): ft_client.o
+	$(CC) $(CFLAGS) $^ -L printf -lftprintf -o $@
 
 %.o: %.c
-		$(CC) $(CFLAGS) -c $< -o $@ -I includes
+	$(CC) $(CFLAGS) -c $< -o $@ -I printf/includes
 
-$(NAME): $(OBJS)
-		ar rcs $(NAME) $(OBJS)
+lib:
+	@make -C printf
 
 clean:
 	rm -f $(OBJS)
 
 fclean: clean
-	rm -f $(NAME)
+	rm -rf $(TARGET1) $(TARGET2)
+	@make -C printf fclean
 
 re: fclean all
 
-.PHONY: clean all re fclean
+.PHONY: all clean re lib

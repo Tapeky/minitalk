@@ -6,11 +6,11 @@
 /*   By: tsadouk <tsadouk@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/28 15:34:54 by tsadouk           #+#    #+#             */
-/*   Updated: 2023/11/28 17:39:13 by tsadouk          ###   ########.fr       */
+/*   Updated: 2023/12/13 14:44:08 by tsadouk          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "printf/includes/ft_printf.h"
+#include "ft_printf.h"
 #include <signal.h>
 
 //  Le client prend en paramètre le PID du serveur et le message à envoyer
@@ -20,9 +20,6 @@
 	Chaque signal correspond à un bit du caractère. Il faudra donc envoyer 8
 	signaux pour chaque caractère. 
 */
-
-#include "printf/includes/ft_printf.h"
-#include <signal.h>
 
 void	send_char(int pid, char c)
 {
