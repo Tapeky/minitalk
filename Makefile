@@ -6,44 +6,47 @@
 #    By: tsadouk <tsadouk@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/12/13 14:23:56 by tsadouk           #+#    #+#              #
-#    Updated: 2023/12/13 14:59:57 by tsadouk          ###   ########.fr        #
+#    Updated: 2023/12/13 17:21:03 by tsadouk          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = minitalk.a
-
-CC = gcc
-
+CC = clang
 CFLAGS = -Wall -Wextra -Werror
+LIBFT_DIR = printf
+LIBFT_FLAGS = -L$(LIBFT_DIR) -lftprintf
+INCLUDES = -I$(LIBFT_DIR)/includes
 
-SRCS = ft_client.c ft_server.c
-
+SRCS = client.c server.c
+SRCS_BONUS = client_bonus.c server_bonus.c
 OBJS = $(SRCS:.c=.o)
+OBJS_BONUS = $(SRCS_BONUS:.c=.o)
 
-TARGET1 = server 
-TARGET2 = client
+TARGETS = server client
+TARGETS_BONUS = server_bonus client_bonus
 
-all: lib $(TARGET1) $(TARGET2)
+all: libft $(TARGETS)
 
-$(TARGET1): ft_server.o
-	$(CC) $(CFLAGS) $^ -L printf -lftprintf -o $@
+$(TARGETS): %: %.o
+	$(CC) $(CFLAGS) $^ $(LIBFT_FLAGS) -o $@
 
-$(TARGET2): ft_client.o
-	$(CC) $(CFLAGS) $^ -L printf -lftprintf -o $@
+$(TARGETS_BONUS): %_bonus: %_bonus.o
+	$(CC) $(CFLAGS) $^ $(LIBFT_FLAGS) -o $@
+
+bonus: libft $(TARGETS_BONUS)
+
+libft:
+	@make -C $(LIBFT_DIR)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@ -I printf/includes
-
-lib:
-	@make -C printf
+	$(CC) $(CFLAGS) -c $< -o $@ $(INCLUDES)
 
 clean:
-	rm -f $(OBJS)
-
+	rm -f $(OBJS) $(OBJS_BONUS)
+	
 fclean: clean
-	rm -rf $(TARGET1) $(TARGET2)
-	@make -C printf fclean
+	rm -f $(TARGETS) $(TARGETS_BONUS)
+	@make -C $(LIBFT_DIR) fclean
 
 re: fclean all
 
-.PHONY: all clean re lib
+.PHONY: all clean fclean re bonus libft

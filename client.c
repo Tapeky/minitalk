@@ -1,25 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_client.c                                        :+:      :+:    :+:   */
+/*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tsadouk <tsadouk@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/28 15:34:54 by tsadouk           #+#    #+#             */
-/*   Updated: 2023/12/13 14:44:08 by tsadouk          ###   ########.fr       */
+/*   Updated: 2023/12/15 22:18:24 by tsadouk          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
-#include <signal.h>
+#include "minitalk.h"
 
-//  Le client prend en paramètre le PID du serveur et le message à envoyer
-//  le client doit communiquer avec le serveur la chaine passe en paramètre
-/*  Le client envoie un message chiffre au serveur sous forme binaire, 
-	SIGUSR1 = 0, SIGUSR2 = 1. Le serveur affiche le message déchiffré.
-	Chaque signal correspond à un bit du caractère. Il faudra donc envoyer 8
-	signaux pour chaque caractère. 
-*/
+int	g_got_signal = 0;
+
+void	signal_handler(int sig)
+{
+	if (sig == SIGUSR2)
+		g_got_signal = 1;
+}
 
 void	send_char(int pid, char c)
 {
@@ -28,13 +27,15 @@ void	send_char(int pid, char c)
 	i = 0;
 	while (i < 8)
 	{
+		g_got_signal = 0;
 		if (c & 1)
-			kill(pid, SIGUSR2);
-		else
 			kill(pid, SIGUSR1);
+		else
+			kill(pid, SIGUSR2);
 		c >>= 1;
 		i++;
-		usleep(100);
+		while (!g_got_signal)
+			sleep(2);
 	}
 }
 
@@ -55,6 +56,7 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	i = 0;
+	signal(SIGUSR2, signal_handler);
 	while (argv[2][i])
 	{
 		send_char(pid, argv[2][i]);

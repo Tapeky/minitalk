@@ -1,8 +1,10 @@
 {
     "files.associations": {
-        "ft_printf.h": "c",
-        "signal.h": "c"
-    },
+		"ft_printf.h": "c",
+		"signal.h": "c",
+		"algorithm": "c",
+		"minitalk_bonus.h": "c"
+	},
     "editor.detectIndentation": false,
     "editor.tabSize": 4,
     "editor.insertSpaces": false

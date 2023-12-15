@@ -10,18 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
-#include <signal.h>
+#include "minitalk.h"
 
-/*
-** Le serveur doit afficher le message envoyé par le client
-*/
-void	decrypt_message(int sig)
+void	decrypt_message(int sig, siginfo_t *info, void *context)
 {
-	static int		i = 0;
-	static char		c = 0;
+	static int	i = 0;
+	static char	c = 0;
 
-	if (sig == SIGUSR2)
+	(void)context;
+	if (sig == SIGUSR1)
 		c |= 1 << i;
 	i++;
 	if (i == 8)
@@ -30,14 +27,24 @@ void	decrypt_message(int sig)
 		i = 0;
 		c = 0;
 	}
+	kill(info->si_pid, SIGUSR2);
 }
 
 int	main(void)
 {
-	ft_printf("PID = %d\n", getpid());
-	signal(SIGUSR1, decrypt_message);
-	signal(SIGUSR2, decrypt_message);
+	struct sigaction	act;
+	int					pid;
+
+	pid = getpid();
+	ft_printf("PID = %d\n", pid);
+	act.sa_sigaction = decrypt_message;
+	sigemptyset(&act.sa_mask);
+	act.sa_flags = SA_SIGINFO;
 	while (1)
+	{
+		sigaction(SIGUSR1, &act, NULL);
+		sigaction(SIGUSR2, &act, NULL);
 		pause();
+	}
 	return (0);
 }
